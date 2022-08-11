@@ -10,6 +10,29 @@ trigger:
 pool:
   name: Custom
 
+variables:
+  # IO
+  PERSONA: devsecops
+  RELEASE: major
+  PROJECT_NAME: WebGoat
+
+  # SCM
+  SCM_TYPE: github
+  SCM_OWNER: io-poc
+  SCM_REPO_NAME: Build.Repository.Name
+  SCM_BRANCH_NAME: ${{ Build.SourceBranchName }}
+
+  # JIRA
+  JIRA_ASSIGNEE: ''
+  JIRA_ISSUE_TYPE: Bug
+  JIRA_ISSUE_QUERY: "resolution=Unresolved"
+  JIRA_PROJECT_KEY: ''
+  JIRA_PROJECT_NAME: ''
+
+  # AST - SCA - Black Duck
+  BLACKDUCK_PROJECT_NAME: WebGoat
+  BLACKDUCK_PROJECT_VERSION: 8.2.1-SNAPSHOT
+
 stages:
 - stage: Prescription
   jobs:
@@ -20,5 +43,7 @@ stages:
     - checkout: none
     - script: |
         pwd
-        ls -ltr
+        echo $(Build.Repository.Name)
+        echo $(SCM_REPO_NAME)
+        echo $(SCM_BRANCH_NAME)
         ../../../io -v

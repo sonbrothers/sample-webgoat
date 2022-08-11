@@ -4,7 +4,7 @@
     "Stage": "execution",
     "Config": {
         "command": [
-            "./bd.sh"
+            "./executeBlackDuck.sh"
         ],
         "Conditions":["Prescription.Security.Activities.Sca.Enabled"],
         "Require": [

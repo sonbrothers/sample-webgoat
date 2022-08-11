@@ -20,7 +20,7 @@ variables:
   SCM_TYPE: github
   SCM_OWNER: io-poc
   SCM_REPO_NAME: Build.Repository.Name
-  SCM_BRANCH_NAME: ${{ Build.SourceBranchName }}
+  SCM_BRANCH_NAME: $(Build.SourceBranchName)
 
   # JIRA
   JIRA_ASSIGNEE: ''

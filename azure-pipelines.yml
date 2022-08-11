@@ -41,8 +41,8 @@ stages:
         SCM_REPO_NAME="$(cut -d'/' -f2 <<<"$(Build.Repository.Name)")"
         SCM_BRANCH_NAME=$(Build.SourceBranchName)
         
-        echo "$(SCM_OWNER)"
-        echo "$(SCM_REPO_NAME)"
-        echo "$(SCM_TYPE)"
-        echo "$(SCM_BRANCH_NAME)"
+        echo "$SCM_OWNER"
+        echo "$SCM_REPO_NAME"
+        echo "$SCM_TYPE"
+        echo "$SCM_BRANCH_NAME"
         ../../../io -v

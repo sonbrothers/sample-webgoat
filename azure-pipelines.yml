@@ -15,11 +15,6 @@ variables:
   PERSONA: devsecops
   PROJECT_NAME: WebGoat
 
-  # SCM
-  #SCM_TYPE: github
-  SCM_OWNER: io-poc
-  SCM_BRANCH_NAME: $(Build.SourceBranchName)
-
   # JIRA
   JIRA_ASSIGNEE: ''
   JIRA_ISSUE_TYPE: Bug
@@ -44,9 +39,10 @@ stages:
         SCM_TYPE=$(echo "$(Build.Repository.Provider)" | awk '{print tolower($0)}')
         SCM_OWNER="$(cut -d'/' -f1 <<<"$(Build.Repository.Name)")"
         SCM_REPO_NAME="$(cut -d'/' -f2 <<<"$(Build.Repository.Name)")"
-        echo "$SCM_OWNER"
+        SCM_BRANCH_NAME=$(Build.SourceBranchName)
+        
         echo "$(SCM_OWNER)"
-        echo $(SCM_REPO_NAME)
-        echo $(SCM_TYPE)
-        echo $(SCM_BRANCH_NAME)
+        echo "$(SCM_REPO_NAME)"
+        echo "$(SCM_TYPE)"
+        echo "$(SCM_BRANCH_NAME)"
         ../../../io -v

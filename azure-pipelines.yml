@@ -32,6 +32,8 @@ stages:
     steps:
     - checkout: none
     - script: |
+        pwd
+        ls
         # Get SCM details
         SCM_TYPE=$(echo "$(Build.Repository.Provider)" | awk '{print tolower($0)}')
         SCM_OWNER="$(cut -d'/' -f1 <<<"$(Build.Repository.Name)")"
@@ -55,6 +57,8 @@ stages:
       displayName: 'Stage IO (Prescription)'
 
     - script: |
+        pwd
+        ls
         export SYNOPSYS_IO_Blackduck_AuthToken=$(BLACK_DUCK_TOKEN)
         export SYNOPSYS_IO_Blackduck_ProjectName=WebGoat
         export SYNOPSYS_IO_Blackduck_InstanceUrl="https://poc95.blackduck.synopsys.com"

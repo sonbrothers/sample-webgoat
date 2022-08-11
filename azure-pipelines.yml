@@ -24,13 +24,13 @@ variables:
   JIRA_PROJECT_NAME: ''
 
 stages:
-- stage: Prescription
+- stage: IntelligentOrchestration
   jobs:
-  - job: PrescriptionJob
-    displayName: IO - Prescription
+  - job: IntelligentOrchestration
+    displayName: IntelligentOrchestration
     timeoutInMinutes: 0
     steps:
-    - checkout: none
+    - checkout: self
     - script: |
         pwd
         ls

@@ -23,10 +23,6 @@ variables:
   JIRA_PROJECT_KEY: ''
   JIRA_PROJECT_NAME: ''
 
-  # AST - SCA - Black Duck
-  BLACKDUCK_PROJECT_NAME: WebGoat
-  BLACKDUCK_PROJECT_VERSION: 8.2.1-SNAPSHOT
-
 stages:
 - stage: Prescription
   jobs:
@@ -56,3 +52,11 @@ stages:
           github.apiurl="https://api.github.com/repos" \
           github.username=$(GITHUB_USERNAME) \
           github.token=$(GITHUB_TOKEN)
+      displayName: 'Stage IO (Prescription)'
+
+    - script: |
+        export SYNOPSYS_IO_Blackduck_AuthToken=$(BLACK_DUCK_TOKEN)
+        export SYNOPSYS_IO_Blackduck_ProjectName=WebGoat
+        export SYNOPSYS_IO_Blackduck_InstanceUrl="https://poc95.blackduck.synopsys.com"
+        ../../../io --stage execution --adapters io-adapter-blackduck.json
+      displayName: 'Stage Execution (SCA - Black Duck)'

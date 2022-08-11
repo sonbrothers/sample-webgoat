@@ -51,7 +51,7 @@ stages:
         ../../../io -v
         ../../../io --stage io \
           io.server.url="https://io03.codedx.synopsys.com" \
-          io.server.token="$IO_TOKEN" \
+          io.server.token=$(IO_TOKEN) \
           workflow.engine.version="$WORKFLOW_VERSION" \
           project.name="$PROJECT_NAME" \
           persona.type="$PERSONA" \

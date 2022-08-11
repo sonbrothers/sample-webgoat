@@ -52,13 +52,13 @@ stages:
         ../../../io --stage io \
           io.server.url="https://io03.codedx.synopsys.com" \
           io.server.token=$(IO_TOKEN) \
-          workflow.engine.version="$WORKFLOW_VERSION" \
-          project.name="$PROJECT_NAME" \
-          persona.type="$PERSONA" \
-          scm.type="$SCM_TYPE" \
-          scm.owner="$SCM_OWNER" \
-          scm.repository.name="$SCM_REPO_NAME" \
-          scm.repository.branch.name="$SCM_BRANCH_NAME" \
+          workflow.engine.version=$(WORKFLOW_VERSION) \
+          project.name=$(PROJECT_NAME) \
+          persona.type=$(PERSONA) \
+          scm.type=$SCM_TYPE" \
+          scm.owner=$SCM_OWNER" \
+          scm.repository.name=$SCM_REPO_NAME" \
+          scm.repository.branch.name=$SCM_BRANCH_NAME \
           github.apiurl="https://api.github.com/repos" \
-          github.username="$GITHUB_USERNAME" \
-          github.token="$GITHUB_TOKEN"
+          github.username=$(GITHUB_USERNAME) \
+          github.token=$(GITHUB_TOKEN)

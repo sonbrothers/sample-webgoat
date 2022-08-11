@@ -14,6 +14,7 @@ variables:
   # IO
   PERSONA: devsecops
   PROJECT_NAME: WebGoat
+  WORKFLOW_VERSION: 2022.7.0
 
   # JIRA
   JIRA_ASSIGNEE: ''
@@ -35,7 +36,7 @@ stages:
     steps:
     - checkout: none
     - script: |
-        pwd
+        # Get SCM details
         SCM_TYPE=$(echo "$(Build.Repository.Provider)" | awk '{print tolower($0)}')
         SCM_OWNER="$(cut -d'/' -f1 <<<"$(Build.Repository.Name)")"
         SCM_REPO_NAME="$(cut -d'/' -f2 <<<"$(Build.Repository.Name)")"
@@ -45,4 +46,19 @@ stages:
         echo "$SCM_REPO_NAME"
         echo "$SCM_TYPE"
         echo "$SCM_BRANCH_NAME"
+        
+        # IO Client Module Version
         ../../../io -v
+        ./io --stage io \
+          io.server.url="https://io03.codedx.synopsys.com" \
+          io.server.token="$(IO_ACCESS_TOKEN)" \
+          workflow.engine.version="$(WORKFLOW_VERSION)" \
+          project.name="$(PROJECT_NAME)" \
+          persona.type="$(PERSONA)" \
+          scm.type="$(SCM_TYPE)" \
+          scm.owner="$(SCM_OWNER)" \
+          scm.repository.name="$(SCM_REPO_NAME)" \
+          scm.repository.branch.name="$(SCM_BRANCH_NAME)" \
+          github.apiurl="https://api.github.com/repos" \
+          github.username="$(GITHUB_USERNAME)" \
+          github.token="$(GITHUB_TOKEN)"

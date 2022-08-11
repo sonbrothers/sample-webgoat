@@ -21,3 +21,4 @@ stages:
     - script: |
         pwd
         ls -ltr
+        ../../../io -v

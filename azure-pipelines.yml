@@ -187,7 +187,7 @@ stages:
         else
           echo "Malicious Code Detection skipped due to prescription"
         fi
-      displayName: 'Malicious Code Detection'
+      displayName: 'BSIMM - Malicious Code Detection'
 
     - script: |
         ../../../io --state io_state.json --stage workflow

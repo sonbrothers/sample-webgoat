@@ -54,7 +54,8 @@ stages:
           scm.repository.branch.name="$SCM_BRANCH_NAME" \
           github.apiurl="https://api.github.com/repos" \
           github.username=$(GITHUB_USERNAME) \
-          github.token=$(GITHUB_TOKEN)
+          github.token=$(GITHUB_TOKEN) \
+          jira.assignee="$(JIRA_ASSIGNEE)" jira.authtoken="$(JIRA_TOKEN)" jira.enable=true jira.hosturl="$(JIRA_HOST_URL)" jira.issuesquery="$(JIRA_ISSUE_QUERY)" jira.issuetype="$(JIRA_ISSUE_TYPE)" jira.project.key="$(JIRA_PROJECT_KEY)" jira.project.name="$(JIRA_PROJECT_NAME)" jira.username="$(JIRA_ASSIGNEE)"
 
         export IO_IQ_RUN_ID=$(jq -r '.data.io.run.id' io_state.json)
         apiURL="${IO_SERVER_URL}"
@@ -197,8 +198,7 @@ stages:
       displayName: 'Malicious Code Detection'
 
     - script: |
-        ../../../io --state io_state.json --stage workflow \
-          jira.assignee="$(JIRA_ASSIGNEE)" jira.authtoken="$(JIRA_TOKEN)" jira.enable=true jira.hosturl="$(JIRA_HOST_URL)" jira.issuesquery="$(JIRA_ISSUE_QUERY)" jira.issuetype="$(JIRA_ISSUE_TYPE)" jira.project.key="$(JIRA_PROJECT_KEY)" jira.project.name="$(JIRA_PROJECT_NAME)" jira.username="$(JIRA_ASSIGNEE)"
+        ../../../io --state io_state.json --stage workflow
         echo "========================== IO WorkflowEngine Summary ============================"
         WFOUTPUT=wf-output.json
         if [[ -f "$WFOUTPUT" ]]; then

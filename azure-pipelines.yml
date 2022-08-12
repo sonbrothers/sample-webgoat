@@ -39,7 +39,7 @@ stages:
         SCM_OWNER="$(cut -d'/' -f1 <<<"$(Build.Repository.Name)")"
         SCM_REPO_NAME="$(cut -d'/' -f2 <<<"$(Build.Repository.Name)")"
         SCM_BRANCH_NAME=$(Build.SourceBranchName)
-        
+
         # Stage IO (Prescription)
         ../../../io --stage io \
           io.server.url=$(IO_SERVER_URL) \
@@ -54,7 +54,7 @@ stages:
           github.apiurl="https://api.github.com/repos" \
           github.username=$(GITHUB_USERNAME) \
           github.token=$(GITHUB_TOKEN)
-        
+
         export IO_IQ_RUN_ID=$(jq -r '.data.io.run.id' io_state.json)
         apiURL="${IO_SERVER_URL}"
         apiURL+="${IO_IQ_RUN_API}"
@@ -90,7 +90,7 @@ stages:
             blackduck.instanceurl="https://poc95.blackduck.synopsys.com" \
             blackduck.authtoken=$(BLACK_DUCK_TOKEN) \
             blackduck.projectname="WebGoat" \
-            blackduck.projectversion="8.2.1-SNAPSHOT" 
+            blackduck.projectversion="8.2.1-SNAPSHOT"
         else
           echo "SCA skipped due to prescription"
         fi
@@ -194,3 +194,15 @@ stages:
           echo "Malicious Code Detection skipped due to prescription"
         fi
       displayName: 'Malicious Code Detection'
+
+    - script: |
+        ../../../io --state io_state.json --stage workflow
+        echo "========================== IO WorkflowEngine Summary ============================"
+        WFOUTPUT=wf-output.json
+        if [[ -f "$WFOUTPUT" ]]; then
+          echo "Breaker Status - $(jq -r '.breaker.status' wf-output.json)"
+        else
+          echo "No Workflow Output JSON - Were any scans run?"
+        fi
+        echo "========================== IO WorkflowEngine Summary ============================"
+      name: 'Workflow'

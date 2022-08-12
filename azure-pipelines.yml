@@ -55,13 +55,17 @@ stages:
       displayName: 'Stage IO (Prescription)'
 
     - script: |
-        #export SYNOPSYS_IO_Blackduck_AuthToken=$(BLACK_DUCK_TOKEN)
-        #export SYNOPSYS_IO_Blackduck_ProjectName=WebGoat
-        #export SYNOPSYS_IO_Blackduck_InstanceUrl="https://poc95.blackduck.synopsys.com"
-        chmod a+x executeBlackDuck.sh
-        ../../../io --state io_state.json --stage execution --adapters io-adapter-blackduck.json \
-          blackduck.instanceurl="https://poc95.blackduck.synopsys.com" \
-          blackduck.authtoken=$(BLACK_DUCK_TOKEN) \
-          blackduck.projectname="WebGoat" \
-          blackduck.projectversion="8.2.1-SNAPSHOT" 
+        # Conditionally run SCA
+        DO_SCA=$(jq -r '.data.prescription.security.activities.sca.enabled' io_state.json)
+        if [[ "$DO_SCA" == "true" ]];
+        then
+          chmod a+x executeBlackDuck.sh
+          ../../../io --state io_state.json --stage execution --adapters io-adapter-blackduck.json \
+            blackduck.instanceurl="https://poc95.blackduck.synopsys.com" \
+            blackduck.authtoken=$(BLACK_DUCK_TOKEN) \
+            blackduck.projectname="WebGoat" \
+            blackduck.projectversion="8.2.1-SNAPSHOT" 
+        else
+          echo "SCA skipped due to prescription"
+        fi
       displayName: 'Stage Execution (SCA - Black Duck)'

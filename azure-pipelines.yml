@@ -67,7 +67,7 @@ stages:
         echo "${iq}" | jq
         echo "=========================================================================================="
         echo
-      displayName: 'Stage IO (Prescription)'
+      displayName: 'Prescription'
 
     - script: |
         # Conditionally run SAST
@@ -78,7 +78,7 @@ stages:
         else
           echo "SAST skipped due to prescription"
         fi
-      displayName: 'Stage Execution (SAST)'
+      displayName: 'SAST'
 
     - script: |
         # Conditionally run SCA
@@ -94,7 +94,7 @@ stages:
         else
           echo "SCA skipped due to prescription"
         fi
-      displayName: 'Stage Execution (SCA - Black Duck)'
+      displayName: 'SCA - Black Duck'
 
     - script: |
         # Conditionally run Image Scan
@@ -105,7 +105,7 @@ stages:
         else
           echo "Image Scan skipped due to prescription"
         fi
-      displayName: 'Stage Execution (Image Scan)'
+      displayName: 'Image Scan'
 
     - script: |
         # Conditionally run DAST
@@ -116,7 +116,7 @@ stages:
         else
           echo "DAST skipped due to prescription"
         fi
-      displayName: 'Stage Execution (DAST)'
+      displayName: 'DAST'
 
     - script: |
         # Conditionally run Penetration Test
@@ -127,7 +127,7 @@ stages:
         else
           echo "Penetration Test skipped due to prescription"
         fi
-      displayName: 'Stage Execution (Penetration Test)'
+      displayName: 'Penetration Test'
 
     - script: |
         # Conditionally run Secure Code Review
@@ -138,7 +138,7 @@ stages:
         else
           echo "Secure Code Review skipped due to prescription"
         fi
-      displayName: 'Stage Execution (Secure Code Review)'
+      displayName: 'Secure Code Review'
 
     - script: |
         # Conditionally run Threat Model
@@ -149,7 +149,7 @@ stages:
         else
           echo "Threat Model skipped due to prescription"
         fi
-      displayName: 'Stage Execution (Threat Model)'
+      displayName: 'Threat Model'
 
     - script: |
         # Conditionally run Network Scan
@@ -160,7 +160,7 @@ stages:
         else
           echo "Network Scan skipped due to prescription"
         fi
-      displayName: 'Stage Execution (Network Scan)'
+      displayName: 'Network Scan'
 
     - script: |
         # Conditionally run Infrastructure Review
@@ -171,7 +171,7 @@ stages:
         else
           echo "Infrastructure Review skipped due to prescription"
         fi
-      displayName: 'Stage Execution (Infrastructure Review)'
+      displayName: 'Infrastructure Review'
 
     - script: |
         # Conditionally run Cloud Configuration Review
@@ -182,4 +182,15 @@ stages:
         else
           echo "Cloud Configuration Review skipped due to prescription"
         fi
-      displayName: 'Stage Execution (Cloud Configuration Review)'
+      displayName: 'Cloud Configuration Review'
+
+    - script: |
+        # Conditionally run BSIMM - Code Review 3.4 - Malicious Code Detection
+        DO_MCD=$(jq -r '.data.prescription.security.activities.BSIMMCRThreePointFour.enabled' io_state.json)
+        if [[ "$DO_MCD" == "true" ]];
+        then
+          echo "Run BSIMM activity - Code Review 3.4 - Malicious Code Detection..."
+        else
+          echo "Malicious Code Detection skipped due to prescription"
+        fi
+      displayName: 'Malicious Code Detection'

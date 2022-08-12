@@ -12,9 +12,11 @@ pool:
 
 variables:
   # IO
-  PERSONA: devsecops
-  PROJECT_NAME: WebGoat
-  WORKFLOW_VERSION: 2022.7.0
+  IO_PERSONA: devsecops
+  IO_PROJECT_NAME: WebGoat
+  IO_SERVER_URL: "https://io03.codedx.synopsys.com"
+  IO_IQ_RUN_API: /api/ioiq/api/orchestration/runs/
+  IO_WORKFLOW_VERSION: 2022.7.0
 
   # JIRA
   JIRA_ASSIGNEE: ''
@@ -40,11 +42,11 @@ stages:
         
         # Stage IO (Prescription)
         ../../../io --stage io \
-          io.server.url="https://io03.codedx.synopsys.com" \
+          io.server.url=$(IO_SERVER_URL) \
           io.server.token=$(IO_TOKEN) \
-          workflow.engine.version=$(WORKFLOW_VERSION) \
-          project.name=$(PROJECT_NAME) \
-          persona.type=$(PERSONA) \
+          workflow.engine.version=$(IO_WORKFLOW_VERSION) \
+          project.name=$(IO_PROJECT_NAME) \
+          persona.type=$(IO_PERSONA) \
           scm.type="$SCM_TYPE" \
           scm.owner="$SCM_OWNER" \
           scm.repository.name="$SCM_REPO_NAME" \
@@ -52,7 +54,31 @@ stages:
           github.apiurl="https://api.github.com/repos" \
           github.username=$(GITHUB_USERNAME) \
           github.token=$(GITHUB_TOKEN)
+        
+        export IO_IQ_RUN_ID=$(jq -r '.data.io.run.id' io_state.json)
+        apiURL="${IO_SERVER_URL}"
+        apiURL+="${IO_IQ_RUN_API}"
+        apiURL+="${IO_IQ_RUN_ID}"
+        apiHeader="Authorization: Bearer "
+        apiHeader+="$(IO_TOKEN)"
+        echo "API call to get IO IQ run details: ${apiURL}"
+        iq=$(curl --location --request GET "${apiURL}" --header "${apiHeader}")
+        echo "================================ IO Risk Explanation ====================================="
+        echo "${iq}" | jq
+        echo "=========================================================================================="
+        echo
       displayName: 'Stage IO (Prescription)'
+
+    - script: |
+        # Conditionally run SAST
+        DO_SAST=$(jq -r '.data.prescription.security.activities.sast.enabled' io_state.json)
+        if [[ "$DO_SAST" == "true" ]];
+        then
+          echo "Run SAST..."
+        else
+          echo "SAST skipped due to prescription"
+        fi
+      displayName: 'Stage Execution (SAST)'
 
     - script: |
         # Conditionally run SCA
@@ -69,3 +95,91 @@ stages:
           echo "SCA skipped due to prescription"
         fi
       displayName: 'Stage Execution (SCA - Black Duck)'
+
+    - script: |
+        # Conditionally run Image Scan
+        DO_IMAGE_SCAN=$(jq -r '.data.prescription.security.activities.imageScan.enabled' io_state.json)
+        if [[ "$DO_IMAGE_SCAN" == "true" ]];
+        then
+          echo "Run Image Scan..."
+        else
+          echo "Image Scan skipped due to prescription"
+        fi
+      displayName: 'Stage Execution (Image Scan)'
+
+    - script: |
+        # Conditionally run DAST
+        DO_DAST=$(jq -r '.data.prescription.security.activities.dast.enabled' io_state.json)
+        if [[ "$DO_DAST" == "true" ]];
+        then
+          echo "Run DAST..."
+        else
+          echo "DAST skipped due to prescription"
+        fi
+      displayName: 'Stage Execution (DAST)'
+
+    - script: |
+        # Conditionally run Penetration Test
+        DO_PEN_TEST=$(jq -r '.data.prescription.security.activities.dastPlusM.enabled' io_state.json)
+        if [[ "$DO_PEN_TEST" == "true" ]];
+        then
+          echo "Run Penetration Test..."
+        else
+          echo "Penetration Test skipped due to prescription"
+        fi
+      displayName: 'Stage Execution (Penetration Test)'
+
+    - script: |
+        # Conditionally run Secure Code Review
+        DO_CODE_REVIEW=$(jq -r '.data.prescription.security.activities.sastPlusM.enabled' io_state.json)
+        if [[ "$DO_CODE_REVIEW" == "true" ]];
+        then
+          echo "Run Secure Code Review..."
+        else
+          echo "Secure Code Review skipped due to prescription"
+        fi
+      displayName: 'Stage Execution (Secure Code Review)'
+
+    - script: |
+        # Conditionally run Threat Model
+        DO_THREAT_MODEL=$(jq -r '.data.prescription.security.activities.THREATMODEL.enabled' io_state.json)
+        if [[ "$DO_THREAT_MODEL" == "true" ]];
+        then
+          echo "Run Threat Model..."
+        else
+          echo "Threat Model skipped due to prescription"
+        fi
+      displayName: 'Stage Execution (Threat Model)'
+
+    - script: |
+        # Conditionally run Network Scan
+        DO_NETWORK_SCAN=$(jq -r '.data.prescription.security.activities.NETWORK.enabled' io_state.json)
+        if [[ "$DO_NETWORK_SCAN" == "true" ]];
+        then
+          echo "Run Network Scan..."
+        else
+          echo "Network Scan skipped due to prescription"
+        fi
+      displayName: 'Stage Execution (Network Scan)'
+
+    - script: |
+        # Conditionally run Infrastructure Review
+        DO_INFRA_REVIEW=$(jq -r '.data.prescription.security.activities.INFRA.enabled' io_state.json)
+        if [[ "$DO_INFRA_REVIEW" == "true" ]];
+        then
+          echo "Run Infrastructure Review..."
+        else
+          echo "Infrastructure Review skipped due to prescription"
+        fi
+      displayName: 'Stage Execution (Infrastructure Review)'
+
+    - script: |
+        # Conditionally run Cloud Configuration Review
+        DO_CLOUD_CONFIG_REVIEW=$(jq -r '.data.prescription.security.activities.CLOUD.enabled' io_state.json)
+        if [[ "$DO_CLOUD_CONFIG_REVIEW" == "true" ]];
+        then
+          echo "Run Cloud Configuration Review..."
+        else
+          echo "Cloud Configuration Review skipped due to prescription"
+        fi
+      displayName: 'Stage Execution (Cloud Configuration Review)'

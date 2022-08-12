@@ -20,7 +20,7 @@ variables:
 
   # JIRA
   JIRA_ASSIGNEE: 'admin'
-  JIRA_URL: "https://jira03.codedx.synopsys.com"
+  JIRA_SERVER_URL: "https://jira03.codedx.synopsys.com"
   JIRA_ISSUE_TYPE: Bug
   JIRA_ISSUE_QUERY: "resolution=Unresolved"
   JIRA_PROJECT_KEY: 'WEBGOAT'
@@ -55,7 +55,7 @@ stages:
           github.apiurl="https://api.github.com/repos" \
           github.username=$(GITHUB_USERNAME) \
           github.token=$(GITHUB_TOKEN) \
-          jira.assignee="$(JIRA_ASSIGNEE)" jira.authtoken="$(JIRA_TOKEN)" jira.enable=true jira.hosturl="$(JIRA_HOST_URL)" jira.issuesquery="$(JIRA_ISSUE_QUERY)" jira.issuetype="$(JIRA_ISSUE_TYPE)" jira.project.key="$(JIRA_PROJECT_KEY)" jira.project.name="$(JIRA_PROJECT_NAME)" jira.username="$(JIRA_ASSIGNEE)"
+          jira.assignee="$(JIRA_ASSIGNEE)" jira.authtoken="$(JIRA_TOKEN)" jira.enable=true jira.hosturl="$(JIRA_SERVER_URL)" jira.issuesquery="$(JIRA_ISSUE_QUERY)" jira.issuetype="$(JIRA_ISSUE_TYPE)" jira.project.key="$(JIRA_PROJECT_KEY)" jira.project.name="$(JIRA_PROJECT_NAME)" jira.username="$(JIRA_ASSIGNEE)"
 
         export IO_IQ_RUN_ID=$(jq -r '.data.io.run.id' io_state.json)
         apiURL="${IO_SERVER_URL}"

@@ -85,6 +85,9 @@ stages:
             blackduck.authtoken=$(BLACK_DUCK_TOKEN) \
             blackduck.projectname=$(BLACK_DUCK_PROJECT_NAME) \
             blackduck.projectversion=$(BLACK_DUCK_PROJECT_VERSION)
+          mv io_state.json state_backup.json
+          currDate=$(date +'%Y-%m-%d')
+          jq --arg date "$currDate" '.data.prescription.security.activities.sca |= . + {"successful": true, "lastScanDate": $date}' state_backup.json >io_state.json
         else
           echo "SCA skipped due to prescription"
         fi

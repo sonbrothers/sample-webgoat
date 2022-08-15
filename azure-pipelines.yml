@@ -28,7 +28,7 @@ variables:
   BLACK_DUCK_PROJECT_VERSION: '8.2.1-SNAPSHOT'
 
 stages:
-- stage: IntelligentOrchestration
+- stage: Synopsys
   jobs:
   - job: IntelligentOrchestration
     displayName: IntelligentOrchestration
@@ -36,25 +36,28 @@ stages:
     steps:
     - checkout: self
     - script: |
+        # This job sets all necessary parameters & runs the IO/Prescription stage of Intelligent Orchestration
         # Get SCM details
         SCM_TYPE=$(echo "$(Build.Repository.Provider)" | awk '{print tolower($0)}')
         SCM_OWNER="$(cut -d'/' -f1 <<<"$(Build.Repository.Name)")"
         SCM_REPO_NAME="$(cut -d'/' -f2 <<<"$(Build.Repository.Name)")"
         SCM_BRANCH_NAME=$(Build.SourceBranchName)
 
-        # Stage IO (Prescription)
+        # Run stage IO (Prescription)
         ../../../io --stage io \
           io.server.url=$(IO_SERVER_URL) io.server.token=$(IO_TOKEN) workflow.engine.version=$(IO_WORKFLOW_VERSION) project.name=$(IO_PROJECT_NAME) persona.type=$(IO_PERSONA) \
           scm.type="$SCM_TYPE" scm.owner="$SCM_OWNER" scm.repository.name="$SCM_REPO_NAME" scm.repository.branch.name="$SCM_BRANCH_NAME" \
           github.apiurl="https://api.github.com/repos" github.username=$(GITHUB_USERNAME) github.token=$(GITHUB_TOKEN) \
           jira.assignee="$(JIRA_ASSIGNEE)" jira.authtoken="$(JIRA_TOKEN)" jira.enable=true jira.hosturl="$(JIRA_SERVER_URL)" jira.issuesquery="$(JIRA_ISSUE_QUERY)" jira.issuetype="$(JIRA_ISSUE_TYPE)" jira.project.key="$(JIRA_PROJECT_KEY)" jira.project.name="$(JIRA_PROJECT_NAME)" jira.username="$(JIRA_ASSIGNEE)"
 
+        # Optional code to hit the 'runs' API to get an explanation from IO-IQ on the prescribed activities
         export IO_IQ_RUN_ID=$(jq -r '.data.io.run.id' io_state.json)
         apiURL="${IO_SERVER_URL}"
         apiURL+="${IO_IQ_RUN_API}"
         apiURL+="${IO_IQ_RUN_ID}"
         apiHeader="Authorization: Bearer "
         apiHeader+="$(IO_TOKEN)"
+        
         echo "API call to get IO IQ run details: ${apiURL}"
         iq=$(curl --location --request GET "${apiURL}" --header "${apiHeader}")
         echo "================================ IO Risk Explanation ====================================="
@@ -68,6 +71,7 @@ stages:
         DO_SAST=$(jq -r '.data.prescription.security.activities.sast.enabled' io_state.json)
         if [[ "$DO_SAST" == "true" ]];
         then
+          # SAST activity/tool trigger/invocation goes here
           echo "Run SAST..."
         else
           echo "SAST skipped due to prescription"
@@ -79,12 +83,18 @@ stages:
         DO_SCA=$(jq -r '.data.prescription.security.activities.sca.enabled' io_state.json)
         if [[ "$DO_SCA" == "true" ]];
         then
+          # SCA is triggered by the shell script below - this runs Black Duck for the provided project name & version.
           chmod a+x executeBlackDuck.sh
           ../../../io --state io_state.json --stage execution --adapters io-adapter-blackduck.json \
             blackduck.instanceurl=$(BLACK_DUCK_SERVER_URL) \
             blackduck.authtoken=$(BLACK_DUCK_TOKEN) \
             blackduck.projectname=$(BLACK_DUCK_PROJECT_NAME) \
             blackduck.projectversion=$(BLACK_DUCK_PROJECT_VERSION)
+          
+          # Once Black Duck has finished execution, in order to tell IO that the scan was successfully completed, these two flags must be set on the state JSON:
+          #  data.prescription.security.activities.sca.successful
+          #  data.prescription.security.activities.sca.lastScanDate
+          # Script block enhancement: Handle Black Duck scan failure
           mv io_state.json state_backup.json
           currDate=$(date +'%Y-%m-%d')
           jq --arg date "$currDate" '.data.prescription.security.activities.sca |= . + {"successful": true, "lastScanDate": $date}' state_backup.json >io_state.json
@@ -98,6 +108,7 @@ stages:
         DO_IMAGE_SCAN=$(jq -r '.data.prescription.security.activities.imageScan.enabled' io_state.json)
         if [[ "$DO_IMAGE_SCAN" == "true" ]];
         then
+          # Image/Container scan activity/tool trigger/invocation goes here
           echo "Run Image Scan..."
         else
           echo "Image Scan skipped due to prescription"
@@ -109,6 +120,7 @@ stages:
         DO_DAST=$(jq -r '.data.prescription.security.activities.dast.enabled' io_state.json)
         if [[ "$DO_DAST" == "true" ]];
         then
+          # DAST activity/tool trigger/invocation goes here
           echo "Run DAST..."
         else
           echo "DAST skipped due to prescription"
@@ -120,6 +132,7 @@ stages:
         DO_PEN_TEST=$(jq -r '.data.prescription.security.activities.dastPlusM.enabled' io_state.json)
         if [[ "$DO_PEN_TEST" == "true" ]];
         then
+          # Penetration testing activity/tool trigger/invocation goes here
           echo "Run Penetration Test..."
         else
           echo "Penetration Test skipped due to prescription"
@@ -131,6 +144,7 @@ stages:
         DO_CODE_REVIEW=$(jq -r '.data.prescription.security.activities.sastPlusM.enabled' io_state.json)
         if [[ "$DO_CODE_REVIEW" == "true" ]];
         then
+          # Manual Secure Code Review activity/tool trigger/invocation goes here
           echo "Run Secure Code Review..."
         else
           echo "Secure Code Review skipped due to prescription"
@@ -142,6 +156,7 @@ stages:
         DO_THREAT_MODEL=$(jq -r '.data.prescription.security.activities.THREATMODEL.enabled' io_state.json)
         if [[ "$DO_THREAT_MODEL" == "true" ]];
         then
+          # Threat Modeling activity/tool trigger/invocation goes here
           echo "Run Threat Model..."
         else
           echo "Threat Model skipped due to prescription"
@@ -153,6 +168,7 @@ stages:
         DO_NETWORK_SCAN=$(jq -r '.data.prescription.security.activities.NETWORK.enabled' io_state.json)
         if [[ "$DO_NETWORK_SCAN" == "true" ]];
         then
+          # Network Scanning activity/tool trigger/invocation goes here
           echo "Run Network Scan..."
         else
           echo "Network Scan skipped due to prescription"
@@ -164,6 +180,7 @@ stages:
         DO_INFRA_REVIEW=$(jq -r '.data.prescription.security.activities.INFRA.enabled' io_state.json)
         if [[ "$DO_INFRA_REVIEW" == "true" ]];
         then
+          # Infrastructure Review activity/tool trigger/invocation goes here
           echo "Run Infrastructure Review..."
         else
           echo "Infrastructure Review skipped due to prescription"
@@ -175,6 +192,7 @@ stages:
         DO_CLOUD_CONFIG_REVIEW=$(jq -r '.data.prescription.security.activities.CLOUD.enabled' io_state.json)
         if [[ "$DO_CLOUD_CONFIG_REVIEW" == "true" ]];
         then
+          # Cloud Configuration Review activity/tool trigger/invocation goes here
           echo "Run Cloud Configuration Review..."
         else
           echo "Cloud Configuration Review skipped due to prescription"
@@ -186,6 +204,7 @@ stages:
         DO_MCD=$(jq -r '.data.prescription.security.activities.BSIMMCRThreePointFour.enabled' io_state.json)
         if [[ "$DO_MCD" == "true" ]];
         then
+          # MCD activity/tool trigger/invocation goes here
           echo "Run BSIMM activity - Code Review 3.4 - Malicious Code Detection..."
         else
           echo "Malicious Code Detection skipped due to prescription"
@@ -193,8 +212,10 @@ stages:
       displayName: 'BSIMM - Malicious Code Detection'
 
     - script: |
+        # This is the 'Worflow' stage of IO - this is the stage where the conditions from the post-scan policy are evaluated
         ../../../io --state io_state.json --stage workflow
         echo "========================== IO WorkflowEngine Summary ============================"
+        # Workflow stage output: wf-output.json & wf-output.txt
         WFOUTPUT=wf-output.json
         if [[ -f "$WFOUTPUT" ]]; then
           echo "Breaker Status - $(jq -r '.breaker.status' wf-output.json)"

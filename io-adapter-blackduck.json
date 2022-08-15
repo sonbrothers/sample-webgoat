@@ -1,6 +1,6 @@
 [
     {
-        "Name": "Blackduck-SCA",
+        "Name": "Blackduck",
         "Type": "SimpleExecutable",
         "Stage": "execution",
         "Config": {

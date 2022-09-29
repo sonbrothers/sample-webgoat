@@ -13,7 +13,7 @@ pool:
 variables:
   # IO
   IO_PERSONA: devsecops
-  IO_PROJECT_NAME: WebGoat
+  IO_PROJECT_NAME: webgoat-sample
   IO_WORKFLOW_VERSION: 2022.7.0
 
   # JIRA
@@ -24,11 +24,11 @@ variables:
   JIRA_PROJECT_NAME: 'WEBGOAT'
   
   # AST - SCA - Black Duck
-  BLACK_DUCK_PROJECT_NAME: 'WebGoat'
-  BLACK_DUCK_PROJECT_VERSION: '8.2.1-SNAPSHOT'
+  BLACK_DUCK_PROJECT_NAME: 'demo-webgoat'
+  BLACK_DUCK_PROJECT_VERSION: 'Test1'
   
   # ASOC - Code Dx
-  CODEDX_PROJECT_ID: 2
+  CODEDX_PROJECT_ID: 33
 
 stages:
 - stage: Synopsys

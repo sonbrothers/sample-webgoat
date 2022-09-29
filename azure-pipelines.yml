@@ -17,11 +17,11 @@ variables:
   IO_WORKFLOW_VERSION: 2022.7.0
 
   # JIRA
-  JIRA_ASSIGNEE: 'admin'
-  JIRA_ISSUE_TYPE: Bug
-  JIRA_ISSUE_QUERY: "resolution=Unresolved"
-  JIRA_PROJECT_KEY: 'WEBGOAT'
-  JIRA_PROJECT_NAME: 'WEBGOAT'
+  #JIRA_ASSIGNEE: 'admin'
+  #JIRA_ISSUE_TYPE: Bug
+  #JIRA_ISSUE_QUERY: "resolution=Unresolved"
+  #JIRA_PROJECT_KEY: 'WEBGOAT'
+  #JIRA_PROJECT_NAME: 'WEBGOAT'
   
   # AST - SCA - Black Duck
   BLACK_DUCK_PROJECT_NAME: 'demo-webgoat'
@@ -51,7 +51,7 @@ stages:
           io.server.url=$(IO_SERVER_URL) io.server.token=$(IO_TOKEN) workflow.engine.version=$(IO_WORKFLOW_VERSION) project.name=$(IO_PROJECT_NAME) persona.type=$(IO_PERSONA) \
           scm.type="$SCM_TYPE" scm.owner="$SCM_OWNER" scm.repository.name="$SCM_REPO_NAME" scm.repository.branch.name="$SCM_BRANCH_NAME" \
           github.apiurl="https://api.github.com/repos" github.username=$(GITHUB_USERNAME) github.token=$(GITHUB_TOKEN) \
-          jira.assignee="$(JIRA_ASSIGNEE)" jira.authtoken="$(JIRA_TOKEN)" jira.enable=true jira.hosturl="$(JIRA_SERVER_URL)" jira.issuesquery="$(JIRA_ISSUE_QUERY)" jira.issuetype="$(JIRA_ISSUE_TYPE)" jira.project.key="$(JIRA_PROJECT_KEY)" jira.project.name="$(JIRA_PROJECT_NAME)" jira.username="$(JIRA_ASSIGNEE)" \
+          #jira.assignee="$(JIRA_ASSIGNEE)" jira.authtoken="$(JIRA_TOKEN)" jira.enable=true jira.hosturl="$(JIRA_SERVER_URL)" jira.issuesquery="$(JIRA_ISSUE_QUERY)" jira.issuetype="$(JIRA_ISSUE_TYPE)" jira.project.key="$(JIRA_PROJECT_KEY)" jira.project.name="$(JIRA_PROJECT_NAME)" jira.username="$(JIRA_ASSIGNEE)" \
           codedx.instanceurl="$(CODEDX_SERVER_URL)" codedx.projectid=$(CODEDX_PROJECT_ID) codedx.apikey=$(CODEDX_TOKEN)
 
         # Optional code to hit the 'runs' API to get an explanation from IO-IQ on the prescribed activities

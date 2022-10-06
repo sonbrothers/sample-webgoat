@@ -26,6 +26,11 @@ variables:
   # AST - SCA - Black Duck
   BLACK_DUCK_PROJECT_NAME: 'demo-webgoat'
   BLACK_DUCK_PROJECT_VERSION: 'Test1'
+
+  # POLARIS
+  #POLARIS_SERVER_URL:
+  #POLARIS_ACCESS_TOKEN:
+
   
   # ASOC - Code Dx
   CODEDX_PROJECT_ID: 33
@@ -77,10 +82,16 @@ stages:
         then
           # SAST activity/tool trigger/invocation goes here
           echo "Run SAST..."
+          export POLARIS_SERVER_URL=$(POLARIS_SERVER_URL)
+          export POLARIS_ACCESS_TOKEN=$(POLARIS_ACCESS_TOKEN)
+          wget -q $(POLARIS_SERVER_URL)/api/tools/polaris_cli-linux64.zip
+          unzip -j polaris_cli-linux64.zip -d /tmp
+          /tmp/polaris analyze -w
         else
           echo "SAST skipped due to prescription"
         fi
       displayName: 'SAST'
+
 
     - script: |
         # Conditionally run SCA

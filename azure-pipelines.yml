@@ -76,24 +76,6 @@ stages:
       displayName: 'Prescription'
 
     - script: |
-        # Conditionally run SAST
-        DO_SAST=$(jq -r '.data.prescription.security.activities.sast.enabled' io_state.json)
-        if [[ "$DO_SAST" == "true" ]];
-        then
-          # SAST activity/tool trigger/invocation goes here
-          echo "Run SAST..."
-          export POLARIS_SERVER_URL=$(POLARIS_SERVER_URL)
-          export POLARIS_ACCESS_TOKEN=$(POLARIS_ACCESS_TOKEN)
-          wget -q $(POLARIS_SERVER_URL)/api/tools/polaris_cli-linux64.zip
-          unzip -j polaris_cli-linux64.zip -d /tmp
-          /tmp/polaris analyze -w
-        else
-          echo "SAST skipped due to prescription"
-        fi
-      displayName: 'SAST'
-
-
-    - script: |
         # Conditionally run SCA
         DO_SCA=$(jq -r '.data.prescription.security.activities.sca.enabled' io_state.json)
         if [[ "$DO_SCA" == "true" ]];
@@ -117,6 +99,23 @@ stages:
           echo "SCA skipped due to prescription"
         fi
       displayName: 'SCA - Black Duck'
+  
+    - script: |
+        # Conditionally run SAST
+        DO_SAST=$(jq -r '.data.prescription.security.activities.sast.enabled' io_state.json)
+        if [[ "$DO_SAST" == "true" ]];
+        then
+          # SAST activity/tool trigger/invocation goes here
+          echo "Run SAST..."
+          export POLARIS_SERVER_URL=$(POLARIS_SERVER_URL)
+          export POLARIS_ACCESS_TOKEN=$(POLARIS_ACCESS_TOKEN)
+          wget -q $(POLARIS_SERVER_URL)/api/tools/polaris_cli-linux64.zip
+          unzip -j polaris_cli-linux64.zip -d /tmp
+          /tmp/polaris analyze -w
+        else
+          echo "SAST skipped due to prescription"
+        fi
+      displayName: 'SAST'
 
     - script: |
         # Conditionally run Image Scan
